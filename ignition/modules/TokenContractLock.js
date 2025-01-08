@@ -3,9 +3,9 @@
 
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
-module.exports = buildModule("vTokenLock", (m) => {
+module.exports = buildModule("TokenContractLock", (m) => {
     const initialSupply = m.getParameter("initialSupply", 1000000);
-    const myToken = m.contract("vTokenContract", [initialSupply]);
+    const myToken = m.contract("TokenContract", [initialSupply]);
 
     return { myToken };
 });
