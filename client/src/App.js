@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 function App() {
     const [web3, setWeb3] = useState(null);
-    console.log("🚀 ~ App ~ web3:", web3);
     const [account, setAccount] = useState("");
     const [balance, setBalance] = useState(0);
     const [recipient, setRecipient] = useState("");
@@ -34,11 +33,9 @@ function App() {
         async function loadBlockchainData() {
             const accounts = await web3.eth.getAccounts();
             setAccount(accounts[0]);
-            const networkId = await web3.eth.net.getId();
-            const networkData = VTokenContract.networks[networkId];
+            const networkData = VTokenContract.networks[31337];
 
             if (networkData) {
-                console.log("🚀 ~ loadBlockchainData ~ networkData:", networkData);
                 const token = new web3.eth.Contract(VTokenContract.abi, networkData.address);
                 let balance = await token.methods.balanceOf(accounts[0]).call();
                 setBalance(balance.toString());
