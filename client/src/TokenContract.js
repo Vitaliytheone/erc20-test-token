@@ -1,6 +1,6 @@
-import abi from "./vTokenContract.json";
+import abi from "./TokenContract.json";
 
-const VTokenContract = {
+const TokenContract = {
     abi,
     networks: {
         31337: {
@@ -9,4 +9,4 @@ const VTokenContract = {
     },
 };
 
-export default VTokenContract;
+export default TokenContract;

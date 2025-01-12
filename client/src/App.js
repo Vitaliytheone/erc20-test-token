@@ -1,6 +1,6 @@
 import "./App.css";
 import Web3 from "web3";
-import VTokenContract from "./vTokenContract";
+import TokenContract from "./TokenContract";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -10,11 +10,28 @@ function App() {
     const [recipient, setRecipient] = useState("");
     const [amount, setAmount] = useState("");
 
-    const transferTokens = (recipient, amount) => null;
+    const transferTokens = async (recipient, amount) => {
+        const networkId = await web3.eth.net.getId();
+        const networkData = TokenContract.networks[parseInt(networkId)];
+
+        if (networkData) {
+            const token = new web3.eth.Contract(TokenContract.abi, networkData.address);
+            await token.methods.transfer(recipient, web3.utils.toWei(amount, "ether")).send({ from: account });
+            let balance = await token.methods.balanceOf(account).call();
+            setAmount("");
+            setBalance(balance.toString());
+        } else {
+            console.log("Token transfer error");
+        }
+    };
 
     const onSubmit = (e) => {
         e.preventDefault();
-        transferTokens(recipient, amount);
+        if (recipient && amount) {
+            transferTokens(recipient, amount);
+        } else {
+            alert("Recipient and amount must not be empty");
+        }
     };
 
     useEffect(() => {
@@ -33,10 +50,12 @@ function App() {
         async function loadBlockchainData() {
             const accounts = await web3.eth.getAccounts();
             setAccount(accounts[0]);
-            const networkData = VTokenContract.networks[31337];
+
+            const netWorkId = await web3.eth.net.getId();
+            const networkData = TokenContract.networks[parseInt(netWorkId)];
 
             if (networkData) {
-                const token = new web3.eth.Contract(VTokenContract.abi, networkData.address);
+                const token = new web3.eth.Contract(TokenContract.abi, networkData.address);
                 let balance = await token.methods.balanceOf(accounts[0]).call();
                 setBalance(balance.toString());
             } else {
@@ -60,26 +79,36 @@ function App() {
                 <h1>Transfer tokens</h1>
                 <form onSubmit={onSubmit}>
                     <div>
-                        <label htmlFor="recipient">Address:</label>
+                        <label className="App-label" htmlFor="recipient">
+                            Address:
+                        </label>
                         <input
                             id="recipient"
+                            className="App-input"
                             type="text"
+                            value={recipient}
                             onChange={(e) => {
                                 setRecipient(e.target.value);
                             }}
                         />
                     </div>
                     <div>
-                        <label htmlFor="amount">Amount:</label>
+                        <label className="App-label" htmlFor="amount">
+                            Amount:
+                        </label>
                         <input
                             id="amount"
+                            className="App-input"
                             type="text"
+                            value={amount}
                             onChange={(e) => {
                                 setAmount(e.target.value);
                             }}
                         />
                     </div>
-                    <button type="submit">Send form</button>
+                    <button className="App-submit" type="submit">
+                        Send form
+                    </button>
                 </form>
             </header>
         </div>
